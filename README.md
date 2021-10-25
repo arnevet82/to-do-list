@@ -15,3 +15,4 @@ TODO:
 - add validation on server before performing changes on db
 - add loader for async actions
 - error handling + error page
+- add index 'customer_id' in db for better performance
