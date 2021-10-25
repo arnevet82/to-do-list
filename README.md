@@ -14,3 +14,4 @@ TODO:
 - add confirmation dialog before add/edit/delete
 - add validation on server before performing changes on db
 - add loader for async actions
+- error handling + error page
