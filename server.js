@@ -24,16 +24,37 @@ MongoClient.connect('mongodb+srv://natalie:d4d4d4d4@cluster0.9pp9b.mongodb.net/b
 
 // get data
  app.get('/get_data', async (req, res) => { 
-  await getTransactionsData(collection, req, res);
+
+
+  try {
+    const response = await getTransactionsData(collection, req, res);
+    res.status(200).json({data: response, error: null});
+  } catch (e) {
+    res.status(500).json({data: null, error: e.toString()});
+  }
+
 }); 
 
 // update data
 app.post('/update_data', async (req, res) => { 
-  await updateTransactionData(collection, req, res);
+
+  try {
+    const response = await updateTransactionData(collection, req, res);
+    res.status(200).json({data: response, error: null});
+  } catch (e) {
+    res.status(500).json({data: null, error: e.toString()});
+  }
+
 }); 
 
 // delete data
 app.post('/delete_data', async (req, res) => { 
-  await deleteTransaction(collection, req, res);
+
+  try {
+    const response = await deleteTransaction(collection, req, res);
+    res.status(200).json({data: response, error: null});
+  } catch (e) {
+    res.status(500).json({data: null, error: e.toString()});
+  }
 });
 
