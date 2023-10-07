@@ -64,7 +64,7 @@ app.post('/update_data', async (req, res) => {
 }); 
 
 // delete data
-app.post('/delete_data', async (req, res) => { 
+app.post('/delete_todo', async (req, res) => { 
 
   try {
     const response = await deleteTodo(todosCol, req, res);
