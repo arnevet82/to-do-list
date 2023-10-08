@@ -10,14 +10,7 @@ const App = () => {
     const [input, setInput] = useState({});
     const [selectedItem, setSelectedItem] = useState(null);
 
-
     const onAddUpdateClick = (item, type) => {
-
-        console.log('item', item);
-        console.log('type', type);
-
-
-
         switch(type){
             case 'update':
                 setSelectedItem(item);
@@ -29,7 +22,6 @@ const App = () => {
                 setIsUpdate(false);
                 break;
         }
-
         
     };
 
@@ -196,9 +188,6 @@ const App = () => {
             : <></>
 }
 
-
-
-
             <Button className='todoBtn' onClick={getTodos}>get todos</Button>
             <Button className='todoBtn' onClick={() => onAddUpdateClick(null, 'add')}>add todo</Button>
 
@@ -211,7 +200,6 @@ const Wrapper = styled.div`
   text-align: center;
   min-height: 1200px;
   padding-top: 150px;
-  
   
   
   .item{

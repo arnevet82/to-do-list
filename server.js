@@ -43,8 +43,6 @@ app.post('/add_todo', async (req, res) => {
 
   try {
       const response = await addTodo(req, todosCol);
-
-      console.log('response: ', response)
       res.status(200).json({data: response, error: null});
   } catch (e) {
       res.status(500).json({data: null, error: e.toString()});

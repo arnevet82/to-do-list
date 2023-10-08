@@ -1,9 +1,6 @@
 async function getAllTodos(todosCol) {
 
-    const result = await todosCol.find().toArray();
-
-    return result;
-    
+    return await todosCol.find().toArray();
     
 }
 
