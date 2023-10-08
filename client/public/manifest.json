@@ -1,6 +1,6 @@
 {
-  "short_name": "Billing App",
-  "name": "Manage Transactions",
+  "short_name": "Todo-list App",
+  "name": "Manage daily tasks",
   "icons": [
     {
       "src": "favicon.ico",
