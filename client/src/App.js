@@ -5,22 +5,44 @@ import Button from "@mui/material/Button";
 const App = () => {
 
     const [todos, setTodos] = useState(null);
+    const [isAdd, setIsAdd] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const [input, setInput] = useState({});
+    const [selectedItem, setSelectedItem] = useState(null);
 
 
-    const onAddClick = () => {
-        setIsUpdate(true);
+    const onAddUpdateClick = (item, type) => {
+
+        console.log('item', item);
+        console.log('type', type);
+
+
+
+        switch(type){
+            case 'update':
+                setSelectedItem(item);
+                setIsUpdate(true);
+                setIsAdd(false);
+                break;
+            case 'add':
+                setIsAdd(true);
+                setIsUpdate(false);
+                break;
+        }
+
+        
     };
 
-    const updateInput = (event) => {
-        console.log('event.target.id', event.target.id)
+    const onCloseClick = () => {
+        setIsAdd(false);
+        setIsUpdate(false);
+    }
 
-        console.log('event.target.value', event.target.value);
+    const updateInput = (event) => {
         setInput({...input, [event.target.id]: event.target.value});
     }
 
-    const callTodos = async () => {
+    const getTodos = async () => {
         const response = await fetch('/get_data');
         const body = await response.json();
 
@@ -48,6 +70,34 @@ const App = () => {
         const newTodos = body.data;
         setTodos(newTodos);
     }
+
+    const updateTodo = async () => {
+
+        const updatedTodo = {
+            description: input?.description || selectedItem?.description,
+            memo: input?.memo ||selectedItem?.memo,
+            priority:input?.priority || selectedItem?.priority,
+            id: selectedItem?.id,
+            _id: selectedItem?._id,
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedTodo)
+          };
+      
+          const response = await fetch('update_todo', requestOptions);
+          const body = await response.json();
+      
+          if (response.status !== 200) {
+            throw Error(body.message)
+          }
+        const newTodos = body.data;
+        setTodos(newTodos);
+        setIsUpdate(false);
+    }
+
 
     const addTodo = async () => {
         let newTodo = {
@@ -79,13 +129,8 @@ const App = () => {
     };
 
     useEffect(async () => {
-        await callTodos();
+        await getTodos();
       }, []);
-
-      useEffect(async () => {
-        console.log('input', input);
-
-      }, [input]);
 
 
     return (
@@ -95,7 +140,7 @@ const App = () => {
 
             {
                 todos?.length ? todos.map((item) => {
-                    return <>
+                    return <div key={item?.id}>
                     <div style={{display: 'flex', maxWidth: 700, margin: '20px auto'}} key={item?.id}>
                         <div className={'item'} >{item?.description}</div>
                         <br/>
@@ -103,12 +148,14 @@ const App = () => {
                         <br/>
                         <div className={'item'} >{item?.priority}</div>
                         <button onClick={() => deleteTodo(item)} style={{marginLeft: 20}}>delete</button>
+                        <button onClick={() => onAddUpdateClick(item, 'update')} style={{marginLeft: 20}}>update</button>
+
                         </div>
-                    </>
+                    </div>
                 }) : null
             }
 
-            {isUpdate && <div style={{margin: '0 auto', fontWeight: 'bold', textAlign: 'right'}}>
+            {(isUpdate || isAdd) ? <div style={{margin: '0 auto', fontWeight: 'bold', textAlign: 'right'}}>
                 
                 
                 <div style={{display: 'flex', width: '33%', margin: '0 auto'}}>
@@ -118,7 +165,7 @@ const App = () => {
                     </div>
                     
                     <div>
-                        <button style={{ width: 24, margin: 0, padding: 0}} onClick={ () => setIsUpdate(false)}>X</button>
+                        <button style={{ width: 24, margin: 0, padding: 0}} onClick={onCloseClick}>X</button>
                     </div>
 
                 </div>
@@ -130,29 +177,30 @@ const App = () => {
                 <div style={{marginRight: '42%'}}>
                 
                     <label>{`Description:   `}</label>
-                    <input type='text' id='description' onChange={(e) => updateInput(e)}/>
+                    <input type='text' id='description' defaultValue={selectedItem?.description && isUpdate ? selectedItem.description :''} placeholder="description" onChange={(e) => updateInput(e)}/>
                     <br/>
                     <label>{`Urgency:   `}</label>
-                    <input type='text' id='memo' onChange={(e) => updateInput(e)}/>
+                    <input type='text' id='memo' defaultValue={selectedItem?.memo && isUpdate ? selectedItem.memo :''} placeholder="memo" onChange={(e) => updateInput(e)}/>
                     <br/>
                     <label>{`Priority:   `}</label>
-                    <input type='number' id='priority' onChange={(e) => updateInput(e)}/>
+                    <input type='number' id='priority' defaultValue={selectedItem?.priority && isUpdate ? selectedItem.priority :''} placeholder="priority" onChange={(e) => updateInput(e)}/>
                     <br/>
                 
                 </div>
 
                 <div style={{width: '100%', textAlign:'center'}}>
-                <button onClick={addTodo}>SUBMIT</button>
+                <button onClick={isAdd ? addTodo : updateTodo}>SUBMIT</button>
                 </div>
                 
             </div>
+            : <></>
 }
 
 
 
 
-            <Button className='todoBtn' onClick={callTodos}>get todos</Button>
-            <Button className='todoBtn' onClick={onAddClick}>add todo</Button>
+            <Button className='todoBtn' onClick={getTodos}>get todos</Button>
+            <Button className='todoBtn' onClick={() => onAddUpdateClick(null, 'add')}>add todo</Button>
 
         </Wrapper>
     );

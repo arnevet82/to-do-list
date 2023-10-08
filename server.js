@@ -1,5 +1,6 @@
 const {getAllTodos} = require('./be/todo/getTodos.js');
 const {addTodo} = require('./be/todo/addTodo.js');
+const {updateTodo} = require('./be/todo/updateTodo.js');
 const {deleteTodo} = require('./be/todo/deleteTodo.js');
 
 const express = require('express'); 
@@ -52,10 +53,10 @@ app.post('/add_todo', async (req, res) => {
 
 
 // update data
-app.post('/update_data', async (req, res) => { 
+app.post('/update_todo', async (req, res) => { 
 
   try {
-    const response = await updateTransactionData(collection, req, res);
+    const response = await updateTodo(todosCol, req);
     res.status(200).json({data: response, error: null});
   } catch (e) {
     res.status(500).json({data: null, error: e.toString()});
