@@ -3,7 +3,8 @@ import styled from "styled-components";
 import Button from "@mui/material/Button";
 import AddUpdateForm from './components/AddUpdateForm';
 import TodoItem from './components/TodoItem';
-import {getTodosApi, addTodoApi, deleteTodoApi, updateTodoApi} from './services/data-services';
+import { getTodosApi, addTodoApi, deleteTodoApi, updateTodoApi } from './services/data-services';
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const App = () => {
 
@@ -12,6 +13,8 @@ const App = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const [input, setInput] = useState({});
     const [selectedItem, setSelectedItem] = useState(null);
+
+    const defaultList = ["A", "B", "C", "D", "E"];
 
 
     const getTodos = async () => {
@@ -28,7 +31,7 @@ const App = () => {
         }
 
         const response = await addTodoApi(newTodo);
-        
+
         setTodos(current => [response.data, ...current]);
         setIsAdd(false);
     };
@@ -80,11 +83,22 @@ const App = () => {
 
     };
 
-    
+
     const onCloseClick = () => {
         setIsAdd(false);
         setIsUpdate(false);
     }
+
+
+    const handleDrop = (droppedItem) => {
+        if (!droppedItem.destination) return;
+        var updatedList = [...todos];
+        const [reorderedItem] = updatedList.splice(droppedItem.source.index, 1);
+        updatedList.splice(droppedItem.destination.index, 0, reorderedItem);
+        setTodos(updatedList);
+        updateTodoApi(reorderedItem, droppedItem.destination.index);
+    };
+
 
     useEffect(async () => {
         await getTodos();
@@ -92,21 +106,31 @@ const App = () => {
 
 
     return (
+
         <Wrapper>
+             <h1>{'My Todos'}</h1>
 
-            <h1>{'Get Todos'}</h1>
-
-            {
-                todos?.length ? todos.map((item) => {
-                    return <div key={item?.id}>
-                        <TodoItem
-                            item={item}
-                            deleteTodo={deleteTodo}
-                            onAddUpdateClick={onAddUpdateClick}
-                        />
-                    </div>
-                }) : null
-            }
+            {todos?.length ? <DragDropContext onDragEnd={handleDrop}>
+                <Droppable droppableId='list-container'>
+                    {(provided) => (
+                        <div
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                        >
+                            {todos.map((item, index) => (
+                                <TodoItem
+                                    key={index}
+                                    item={item}
+                                    index={index}
+                                    deleteTodo={deleteTodo}
+                                    onAddUpdateClick={onAddUpdateClick}
+                                />
+                            ))}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext> : null}
 
             {(isUpdate || isAdd) &&
                 <AddUpdateForm
@@ -122,8 +146,9 @@ const App = () => {
 
             <Button className='todoBtn' onClick={getTodos}>get todos</Button>
             <Button className='todoBtn' onClick={() => onAddUpdateClick(null, 'add')}>add todo</Button>
+            
+        </Wrapper>     
 
-        </Wrapper>
     );
 }
 
@@ -132,12 +157,19 @@ const Wrapper = styled.div`
   text-align: center;
   min-height: 1200px;
   padding-top: 150px;
+
+  .list-container{
+    display: flex;
+    max-width: 800px;
+    margin: auto;
+  }
   
   .todoBtn{
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    width: 100px;
+    width: 150px;
     margin: 20px;
     min-height: 70px;
+    font-weight: bold;
   }
 
 `;

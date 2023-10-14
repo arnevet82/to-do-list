@@ -29,7 +29,11 @@ const addTodoApi = async (newTodo) => {
 };
 
 
-const updateTodoApi = async (updatedTodo) => {
+const updateTodoApi = async (updatedTodo, index) => {
+
+    if (index){
+        updatedTodo = {...updatedTodo, index};
+    }
 
     const requestOptions = {
         method: 'POST',
