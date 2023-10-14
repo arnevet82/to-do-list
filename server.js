@@ -7,11 +7,12 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const app = express(); 
 const port = process.env.PORT || 5000;
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 let todosCol;
-MongoClient.connect('mongodb+srv://starrnatalie12:0vCbv2tOKk4q4da5@cluster0.5a1zjyz.mongodb.net/?retryWrites=true&w=majority', function (err, client) {
+MongoClient.connect(`mongodb+srv://starrnatalie12:mwcOd0s2bhsE29NP@cluster0.5a1zjyz.mongodb.net/?retryWrites=true&w=majority`, function (err, client) {
   
   if (err) throw err;
 
@@ -66,7 +67,7 @@ app.post('/update_todo', async (req, res) => {
 app.post('/delete_todo', async (req, res) => { 
 
   try {
-    const response = await deleteTodo(todosCol, req, res);
+    const response = await deleteTodo(todosCol, req);
     res.status(200).json({data: response, error: null});
   } catch (e) {
     res.status(500).json({data: null, error: e.toString()});

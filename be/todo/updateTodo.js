@@ -14,8 +14,7 @@ async function updateTodo(todosCol, req) {
 
     await todosCol.updateOne({_id:ObjectId(todo._id)}, {$set: newTodo}, { upsert: true });
 
-    return await todosCol.find().toArray();
-
+    return todo;
 }
 
 
